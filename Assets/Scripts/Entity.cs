@@ -6,7 +6,7 @@ public class Entity : MonoBehaviour
     [SerializeField] private GridManager gridManager;
 
     [Header("Grid Position")]
-    [SerializeField] private Vector2Int gridPosition;
+    [SerializeField] protected Vector2Int gridPosition;
     [SerializeField] private bool snapToGridEachFrame = true;
 
     public Vector2Int GridPosition => gridPosition;
@@ -23,11 +23,18 @@ public class Entity : MonoBehaviour
 
     private void Start()
     {
+
         //吸附到最近的可用位置
         if (gridManager != null && gridManager.TryFindNearestAvailablePosition(transform.position, out Vector2Int nearestPosition))
         {
             gridPosition = nearestPosition;
             gridManager.SetOccupant(gridPosition, this);
+            if (this is Boss boss)
+            {
+                boss.SetBossOccupant();
+                Debug.Log("Boss registered at position: " + gridPosition);
+            }
+
             SyncWorldPosition();
             return;
         }
@@ -149,7 +156,7 @@ public class Entity : MonoBehaviour
     }
 
     // 死亡：删除自身
-    public void Die()
+    public virtual void Die()
     {
         if (GridManager != null)
         {
