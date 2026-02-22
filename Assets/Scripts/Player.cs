@@ -4,7 +4,7 @@ public class Player : Entity
 {
     [Header("Move Settings")]
     [SerializeField] public float actCooldown = 0.2f;
-    [SerializeField] private float baseBpm = 60f;
+    [SerializeField] private float baseBpm = 120f;
     public int health = 3;
 
     private float nextMoveTime;
@@ -44,7 +44,10 @@ public class Player : Entity
     //同步到Animator
     private void OnBeat()
     {
-        animator.SetTrigger("OnBeat");
+        if (BeatManager.BeatIndex % 2 == 0)
+        {
+            animator.SetTrigger("OnEvenBeat");
+        }
         SyncAnimatorSpeed();
     }
     //根据节拍调整动画速度

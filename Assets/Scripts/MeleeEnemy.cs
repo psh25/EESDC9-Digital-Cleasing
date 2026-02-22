@@ -8,6 +8,18 @@ public class MeleeEnemy : Enemy
     private Vector2Int? pendingDirection = null;
     private int pendingWarningExecuteBeat = -1;
 
+    private Animator animator;
+
+    // 获取组件
+    public override void Awake()
+    {
+        base.Awake();
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
+    }
+
     public override void PerformAction()
     {
         if (GridManager == null)
@@ -16,7 +28,18 @@ public class MeleeEnemy : Enemy
         if (turnCounter == 0)
         {
             ChooseDirection();  //抬手阶段
-            ReportNextBeatWarning(); // 抬手后立刻上报下一拍预警
+            if (pendingDirection.HasValue)
+            {
+                if (pendingDirection.Value.x < 0)
+                {
+                    transform.localScale = new Vector3(1, 1, 1);
+                }
+                else if (pendingDirection.Value.x > 0)
+                {
+                    transform.localScale = new Vector3(-1, 1, 1);
+                }
+                ReportNextBeatWarning(); // 抬手后立刻上报下一拍预警
+            }
             turnCounter = 1;
         }
         else  //行动阶段
@@ -94,6 +117,19 @@ public class MeleeEnemy : Enemy
         WarningManager.TryReportWarning(this, targetPos, pendingWarningExecuteBeat);
     }
 
+    // 重写死亡方法：清除未结算的预警
+    public new void Die()
+    {
+        // 清除该敌人的所有未结算预警（通过传入空列表触发清除）
+        if (pendingDirection.HasValue && pendingWarningExecuteBeat > BeatManager.BeatIndex)
+        {
+            WarningManager.TryReportWarnings(this, new List<Vector2Int>(), pendingWarningExecuteBeat);
+        }
+        
+        // 调用基类的死亡逻辑
+        base.Die();
+    }
+
     private void ChooseDirection()  //选择方向
     {
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
@@ -109,13 +145,11 @@ public class MeleeEnemy : Enemy
         if (validDirs.Count > 0)
         {
             pendingDirection = validDirs[Random.Range(0, validDirs.Count)];  //随机选择一个有效方向
-            Debug.Log("抬手方向：" + pendingDirection);
             
         }
         else
         {
             pendingDirection = null;  //没有有效方向，保持原地不动
-             Debug.Log("没有有效方向，近战敌人保持原地");
         }
     }
 }
