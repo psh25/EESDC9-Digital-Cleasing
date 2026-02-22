@@ -1,0 +1,4 @@
+repository "EESDC9_UnityGameProject@tj_yanghz25@cloud.cn"
+  path "/"
+    br "/main"
+    co "/main"
