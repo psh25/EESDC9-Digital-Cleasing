@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 9118216282589209106}
   - component: {fileID: 3280570810693739497}
   m_Layer: 0
-  m_Name: Destination
+  m_Name: Portal
   m_TagString: Untagged
-  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: -1345661183
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bb11c706b61b74645a71bcc45cd15c20, type: 3}
   m_Color: {r: 0.6415094, g: 0.13516067, b: 0.41526738, a: 1}
   m_FlipX: 0
   m_FlipY: 0

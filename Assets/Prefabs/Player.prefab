@@ -101,8 +101,10 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   gridPosition: {x: 0, y: 0}
   snapToGridEachFrame: 1
-  moveCooldown: 0.2
-  animator: {fileID: 0}
+  actCooldown: 0.2
+  baseBpm: 120
+  healthPrefab: {fileID: 4228308786191081229, guid: b2320b6b806ea034c960800e6a562a47, type: 3}
+  health: 3
 --- !u!95 &-3042874344213679710
 Animator:
   serializedVersion: 5

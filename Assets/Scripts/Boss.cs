@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 public class Boss : Enemy
-{
+{       
+    public Boss()
+    {
+        health = 5;
+    }
+
     public void SetBossOccupant()
     { // 占领以Boss为中心的3x3格子
         Vector2Int[] occupantOffset=new Vector2Int[9];
