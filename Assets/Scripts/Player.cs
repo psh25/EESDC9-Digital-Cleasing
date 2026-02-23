@@ -1,11 +1,16 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class Player : Entity
 {
     [Header("Move Settings")]
     [SerializeField] public float actCooldown = 0.2f;
-    [SerializeField] private float baseBpm = 60f;
+    [SerializeField] private float baseBpm = 120f;
+
+    [SerializeField] private GameObject healthPrefab;
     public int health = 3;
+    private readonly List<GameObject> activeHealthVisuals = new List<GameObject>();
 
     private float nextMoveTime;
 
@@ -29,6 +34,7 @@ public class Player : Entity
         {
             animator = GetComponent<Animator>();
         }
+        DisplayHealth();
     }
 
     //订阅OnBeat事件
@@ -44,7 +50,10 @@ public class Player : Entity
     //同步到Animator
     private void OnBeat()
     {
-        animator.SetTrigger("OnBeat");
+        if (BeatManager.BeatIndex % 2 == 0)
+        {
+            animator.SetTrigger("OnEvenBeat");
+        }
         SyncAnimatorSpeed();
     }
     //根据节拍调整动画速度
@@ -147,9 +156,27 @@ public class Player : Entity
     override public void Onhit(Vector2Int fromDirection)
     {
         health -= 1;
+        DisplayHealth();
         if(health <= 0)
         {
             Die();
+            SceneManager.LoadSceneAsync("Lobby",LoadSceneMode.Single);
+        }
+    }
+
+    public void DisplayHealth()
+    {
+        // 在屏幕上方显示血量
+        if (healthPrefab == null) return;
+        for (int i = activeHealthVisuals.Count - 1; i >= 0; i--)
+        {
+            Destroy(activeHealthVisuals[i]);
+        }
+        activeHealthVisuals.Clear();
+        for (int i = 0; i < health; i++)
+        {
+            GameObject healthVisual = Instantiate(healthPrefab, new Vector3(-10 + i * 0.8f, 4.5f, 0), Quaternion.identity);
+            activeHealthVisuals.Add(healthVisual);
         }
     }
 }

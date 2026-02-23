@@ -4,9 +4,22 @@ using UnityEngine;
 
 public class RemoteEnemy : Enemy
 {
+    [SerializeField] private int laserExtension = 12;  // 激光延伸格数
+
     private int turnCounter = 0;               // 0:抬手回合, 1:行动回合
     private Vector2Int? pendingDirection = null;
-    private int pendingWarningExecuteBeat = -1;
+    private int pendingLaserExecuteBeat = -1;
+    private bool attacking = false;
+    private Animator animator;
+
+    public override void Awake()
+    {
+        base.Awake();
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
+    }
 
     public override void PerformAction()
     {
@@ -15,76 +28,76 @@ public class RemoteEnemy : Enemy
 
         if (turnCounter == 0)  //抬手回合
         {
+            attacking = false;
             ChooseDirection();
-            ReportNextBeatWarnings(); // 抬手后立刻上报下一拍预警
-            turnCounter = 1;
-        }
-        else  //行动回合
-        {
             if (pendingDirection.HasValue)
             {
-                Vector2Int currentHit = GridPosition + pendingDirection.Value;
-                while (GridManager.IsValidPosition(currentHit))
+                //调整朝向
+                if (pendingDirection.Value.x < 0)
                 {
-                    Entity occupant = GridManager.GetOccupant(currentHit);
-                    if (occupant is Player player)
-                    {
-                        //Todo:造成伤害
-                        player.Onhit(pendingDirection.Value);
-                    }
-                    
-                    currentHit += pendingDirection.Value;  // 继续向前检查
-                    //Debug.Log("当前激光位置：" + currentHit);
+                    transform.localScale = new Vector3(1, 1, 1);
                 }
-
-                pendingWarningExecuteBeat = -1;
-                pendingDirection = null;
-                turnCounter = 0;
+                else if (pendingDirection.Value.x > 0)
+                {
+                    transform.localScale = new Vector3(-1, 1, 1);
+                }
+                // 两拍后结算激光（当前拍抬手 → 下一拍预警 → 再下一拍结算）
+                animator.SetBool("attacking", attacking);
+                pendingLaserExecuteBeat = BeatManager.BeatIndex + 1;
+                LaserManager.TryScheduleLaser(
+                    source: this,
+                    origin: GridPosition,
+                    direction: pendingDirection.Value,
+                    executeBeat: pendingLaserExecuteBeat,
+                    maxExtension: laserExtension
+                );
             }
+            turnCounter = 1;
+        }
+        else  //行动回合（激光已在 LaserManager 中结算，这里只重置状态）
+        {
+            attacking = true;
+            animator.SetBool("attacking", attacking);
+            pendingLaserExecuteBeat = -1;
+            pendingDirection = null;
+            turnCounter = 0;
         }
     }
+
 
     protected override void OnMovedByTryMove(Vector2Int oldPos, Vector2Int newPos)
     {
         base.OnMovedByTryMove(oldPos, newPos);
 
-        // 抬手阶段内被迫移动：整条预警线立刻刷新到新位置，结算拍号保持不变
+        // 抬手后被迫移动：刷新激光起点到新位置，结算拍号保持不变
         if (turnCounter != 1 || !pendingDirection.HasValue)
         {
             return;
         }
 
-        if (pendingWarningExecuteBeat <= BeatManager.BeatIndex)
+        if (pendingLaserExecuteBeat <= BeatManager.BeatIndex)
         {
             return;
         }
 
-        ReportPendingWarningsAtCurrentPosition();
+        // 重新上报会自动覆盖该来源的旧激光计划
+        LaserManager.TryScheduleLaser(
+            source: this,
+            origin: GridPosition,  // 使用新位置
+            direction: pendingDirection.Value,
+            executeBeat: pendingLaserExecuteBeat,
+            maxExtension: laserExtension
+        );
     }
 
-    // 上报远程敌人下一拍的危险格（沿抬手方向直到被阻挡）
-    private void ReportNextBeatWarnings()
+    // 重写死亡方法：清除未结算的激光
+    public new void Die()
     {
-        pendingWarningExecuteBeat = BeatManager.BeatIndex + 1;
-        ReportPendingWarningsAtCurrentPosition();
-    }
-
-    private void ReportPendingWarningsAtCurrentPosition()
-    {
-        if (GridManager == null || !pendingDirection.HasValue)
-        {
-            return;
-        }
-
-        List<Vector2Int> warningCells = new List<Vector2Int>();
-        Vector2Int current = GridPosition + pendingDirection.Value;
-        while (GridManager.IsValidPosition(current))
-        {
-            warningCells.Add(current);
-            current += pendingDirection.Value;
-        }
-
-        WarningManager.TryReportWarnings(this, warningCells, pendingWarningExecuteBeat);
+        // 清除该敌人调度的所有未结算激光（激光和预警一起清除）
+        LaserManager.TryCancelBySource(this);
+        
+        // 调用基类的死亡逻辑
+        base.Die();
     }
 
     private void ChooseDirection()
@@ -102,12 +115,10 @@ public class RemoteEnemy : Enemy
         if (validDirs.Count > 0)
         {
             pendingDirection = validDirs[Random.Range(0, validDirs.Count)];  // 从有效方向中随机选择一个
-            //Debug.Log("抬手方向：" + pendingDirection);
         }
         else
         {
-            pendingDirection = null;  // 没有有效方向，远程敌人将不会攻击
-            //Debug.Log("远程敌人没有有效方向可抬手");
+            pendingDirection = null;  // 没有有效方向，不攻击
         }
     }
-}
+} 

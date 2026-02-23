@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BeatManager : MonoBehaviour
 {
-    public float bpm = 60f;
+    public float bpm = 120f;
     public float gametime = 0f;
     private float beatInterval;
     private float beatTimer = 0f;
@@ -22,7 +22,6 @@ public class BeatManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //每拍触发OnBeat事件
         beatTimer += Time.deltaTime;
         gametime += Time.deltaTime;
         if (beatTimer >= beatInterval)
@@ -33,7 +32,7 @@ public class BeatManager : MonoBehaviour
             BeatIndex++;
             OnBeatStart?.Invoke();
 
-            // 其他常规节拍逻辑
+            // 触发OnBeat事件
             OnBeat?.Invoke();
         }
     }

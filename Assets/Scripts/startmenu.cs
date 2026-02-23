@@ -8,7 +8,7 @@ public class StartMenuController : MonoBehaviour
     public Button settingsButton;
     public Button exitButton;
 
-    public string mainGameSceneName = "Game1"; // 游戏主场景名称
+    public string mainGameSceneName = "Lobby"; // 游戏主场景名称
 
 
        // 关键：Unity会在脚本启动时自动调用Start()方法

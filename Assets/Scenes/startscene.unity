@@ -791,7 +791,7 @@ MonoBehaviour:
   startButton: {fileID: 1844999682}
   settingsButton: {fileID: 861951389}
   exitButton: {fileID: 652800206}
-  mainGameSceneName: Game1
+  mainGameSceneName: Lobby
 --- !u!4 &844837179
 Transform:
   m_ObjectHideFlags: 0

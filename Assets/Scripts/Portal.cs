@@ -4,33 +4,39 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Destination : Entity
+public class Portal : Entity
 {
     [SerializeField]private string nextSceneName;  //下一关的场景名称
-    private bool finished = false;
+    private bool active = false;
 
+    private void Update()
+    {
+        CheckCompletion();       //每帧检查关卡是否完成
+    }
 
-    private void Update()       //检查是否完成关卡
+    private void CheckCompletion()       //检查是否完成关卡
     {
         if (GridManager == null)
         {
             return;
         }
 
-        // 只遍历Tilemap上的有效格子，避免依赖固定宽高
+        // 遍历Tilemap上的有效格子
         foreach (Vector2Int checkPos in GridManager.GetValidPositions())
         {
-            if (GridManager.GetOccupant(checkPos) is Enemy || GridManager.GetOccupant(checkPos) is Firewall)
+            if (GridManager.GetOccupant(checkPos) is Boss || GridManager.GetOccupant(checkPos) is Firewall)
             {
+                active = false;  //如果还有Boss或Firewall，关卡未完成
                 return;
             }
         }
-
-        finished = true;
+        active = true;
     }
+
+
     public override void Onhit(Vector2Int attackDirection)
     {
-        if (finished == true)
+        if (active == true)
         {
             SceneManager.LoadSceneAsync(nextSceneName,LoadSceneMode.Single);  //加载下一关场景
         }

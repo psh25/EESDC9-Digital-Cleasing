@@ -6,7 +6,6 @@ public class Enemy : Entity
 {
     public int health = 1;
 
-
         private void OnEnable()
         {
             // 订阅节拍事件
@@ -29,7 +28,6 @@ public class Enemy : Entity
         {
             // 这里放置敌人每个节拍要执行的逻辑
             // 例如，随机选择一个方向移动，或者攻击玩家等
-            Debug.Log("敌人在节拍时执行行动");
         }
 
     // 使用 Enemy/子类调用 TryMove 时可收到移动回调
