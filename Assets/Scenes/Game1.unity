@@ -1164,6 +1164,10 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 1758158882522774821, guid: db3a1d0c3a98c4441a474a3e8fbc6404, type: 3}
+      propertyPath: health
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1758158882522774821, guid: db3a1d0c3a98c4441a474a3e8fbc6404, type: 3}
       propertyPath: healthPrefab
       value: 
       objectReference: {fileID: 4228308786191081229, guid: b2320b6b806ea034c960800e6a562a47, type: 3}
