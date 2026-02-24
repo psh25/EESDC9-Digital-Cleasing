@@ -48,6 +48,9 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   gridPosition: {x: 0, y: 0}
   snapToGridEachFrame: 1
+  autoRegisterOnStart: 1
+  deathEffectPrefab: {fileID: 6712123827025910781, guid: 7b8d6ba4ef67d6245b4461e5089ea5b3, type: 3}
+  deathEffectDuration: 0.2
 --- !u!212 &7995197370647788815
 SpriteRenderer:
   m_ObjectHideFlags: 0

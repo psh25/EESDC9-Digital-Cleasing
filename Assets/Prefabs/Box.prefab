@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: -1345661183
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 23e111b4844b89d4191cbdf763afad0f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 99d251762d3fed14793ae14ba748334b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -100,3 +100,4 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   gridPosition: {x: 1, y: 1}
   snapToGridEachFrame: 1
+  autoRegisterOnStart: 1

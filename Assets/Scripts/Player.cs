@@ -12,6 +12,9 @@ public class Player : Entity
     public int health = 3;
     private readonly List<GameObject> activeHealthVisuals = new List<GameObject>();
 
+    [SerializeField] private GameObject deathEffectPrefab;
+    [SerializeField] private float deathEffectDuration = 0.2f;
+
     private float nextMoveTime;
 
     private Animator animator;
@@ -177,6 +180,23 @@ public class Player : Entity
         {
             GameObject healthVisual = Instantiate(healthPrefab, new Vector3(-10 + i * 0.8f, 4.5f, 0), Quaternion.identity);
             activeHealthVisuals.Add(healthVisual);
+        }
+    }
+
+    public override void Die()
+    {
+        Vector3 deathPosition = transform.position;
+        Quaternion deathRotation = transform.rotation;
+
+        base.Die();
+
+        if (deathEffectPrefab != null)
+        {
+            GameObject effect = Instantiate(deathEffectPrefab, deathPosition, deathRotation);
+            if (deathEffectDuration > 0f)
+            {
+                Destroy(effect, deathEffectDuration);
+            }
         }
     }
 }

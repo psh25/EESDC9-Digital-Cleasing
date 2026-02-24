@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Startscene.unity
+    path: Assets/Scenes/StartScene.unity
     guid: 82ae7a0cb217c2145ac28bb60b1a1209
   - enabled: 1
     path: Assets/Scenes/PauseScene.unity
@@ -15,12 +15,15 @@ EditorBuildSettings:
     path: Assets/Scenes/Lobby.unity
     guid: 2956f88ec867569418e49898dc637f03
   - enabled: 1
-    path: Assets/Scenes/Game1.unity
+    path: Assets/Scenes/Game1.1.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/Scenes/Game2.unity
+    path: Assets/Scenes/Game2.1.unity
     guid: 76f1f7e68c09cae45a533df8031f65e9
   - enabled: 1
-    path: Assets/Scenes/Game3.unity
+    path: Assets/Scenes/Game3.1.unity
     guid: 49443878c1ee69d4eabcdc80ac446c3d
+  - enabled: 1
+    path: Assets/Scenes/GameBoss.unity
+    guid: a798ac48867030945a4f8d4b2a66800c
   m_configObjects: {}

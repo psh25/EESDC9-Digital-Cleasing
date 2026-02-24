@@ -101,7 +101,10 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   gridPosition: {x: 0, y: 0}
   snapToGridEachFrame: 1
+  autoRegisterOnStart: 1
   health: 1
+  deathEffectPrefab: {fileID: 3696078211953508054, guid: ddf1492610b55bf4fa3dde2afe6a73db, type: 3}
+  deathEffectDuration: 0.25
 --- !u!95 &441668266951648546
 Animator:
   serializedVersion: 5

@@ -6,6 +6,10 @@ public class Enemy : Entity
 {
     public int health = 1;
 
+    [Header("Death Effect")]
+    [SerializeField] private GameObject deathEffectPrefab;
+    [SerializeField] private float deathEffectDuration = 0.25f;
+
         private void OnEnable()
         {
             // 订阅节拍事件
@@ -50,6 +54,23 @@ public class Enemy : Entity
     public virtual void BossGotHit()
     {
         // Boss特有的受击逻辑
+    }
+
+    public override void Die()
+    {
+        Vector3 deathPosition = transform.position;
+        Quaternion deathRotation = transform.rotation;
+
+        base.Die();
+
+        if (deathEffectPrefab != null)
+        {
+            GameObject effect = Instantiate(deathEffectPrefab, deathPosition, deathRotation);
+            if (deathEffectDuration > 0f)
+            {
+                Destroy(effect, deathEffectDuration);
+            }
+        }
     }
 
     // 被攻击时的响应

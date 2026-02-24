@@ -91,7 +91,7 @@ public class RemoteEnemy : Enemy
     }
 
     // 重写死亡方法：清除未结算的激光
-    public new void Die()
+    public override void Die()
     {
         // 清除该敌人调度的所有未结算激光（激光和预警一起清除）
         LaserManager.TryCancelBySource(this);

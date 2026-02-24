@@ -118,7 +118,7 @@ public class MeleeEnemy : Enemy
     }
 
     // 重写死亡方法：清除未结算的预警
-    public new void Die()
+    public override void Die()
     {
         // 清除该敌人的所有未结算预警（通过传入空列表触发清除）
         if (pendingDirection.HasValue && pendingWarningExecuteBeat > BeatManager.BeatIndex)
