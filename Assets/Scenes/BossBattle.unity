@@ -2358,9 +2358,25 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
+      propertyPath: safeTile
+      value: 
+      objectReference: {fileID: 11400000, guid: 15b9a232924dd3f48980940fb266edec, type: 2}
+    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
       propertyPath: summonCd
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
+      propertyPath: dangerTile
+      value: 
+      objectReference: {fileID: 11400000, guid: 3214028b72c317b4cb6e7c36c49efa8e, type: 2}
+    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
+      propertyPath: ultimateCd
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
+      propertyPath: gridManager
+      value: 
+      objectReference: {fileID: 1718631845}
     - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
       propertyPath: minionPrefab
       value: 
@@ -2430,6 +2446,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 383360628928121449, guid: df0930fb67dfc644a99b118cb8b97b11, type: 3}
+      propertyPath: walkableTilemap
+      value: 
+      objectReference: {fileID: 886406479}
     - target: {fileID: 1157123456836092023, guid: df0930fb67dfc644a99b118cb8b97b11, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2479,6 +2499,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: df0930fb67dfc644a99b118cb8b97b11, type: 3}
+--- !u!114 &1718631845 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 383360628928121449, guid: df0930fb67dfc644a99b118cb8b97b11, type: 3}
+  m_PrefabInstance: {fileID: 1557170989}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4505c3d53fa235446a97cf6277a07dd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2000114671
 PrefabInstance:
   m_ObjectHideFlags: 0

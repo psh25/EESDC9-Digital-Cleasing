@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 public class GridManager : MonoBehaviour
 {
     [Header("Tilemap Settings")]
-    [SerializeField] private Tilemap walkableTilemap;
+    [SerializeField] public Tilemap walkableTilemap;
 
     [Header("Gizmos")]
     public bool showSpawnPoints = true;
