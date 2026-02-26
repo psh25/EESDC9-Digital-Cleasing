@@ -12,11 +12,14 @@ public class Boss : Enemy
     [SerializeField] private int laserCd;
     [SerializeField] private int reverseDirectionCd;
     [SerializeField]private int ultimateCd;
+    [SerializeField] private int Ymax;     // 地图的Y轴范围，假设地图中心为(0,0)，则范围为[-Ymax, Ymax-1]
+    [SerializeField] private int maxEnemyNumber;     
     List<Vector2Int> safePositions = new List<Vector2Int>();
     List<Vector2Int> dangerPositions = new List<Vector2Int>();
     private Tilemap tilemap;  // 用于标记危险区域和安全区域的Tilemap
     public TileBase dangerTile;  // 用于标记危险区域的Tile
     public TileBase safeTile;    // 用于标记安全区域的Tile
+    private int enemyCount;    //敌人数量
     private int summonBeat;
     private int laserBeat;
     private int reverseWarnDuration = 3; // 反转警告持续时间，单位为拍
@@ -25,12 +28,14 @@ public class Boss : Enemy
     private int startReverseDirectionBeat;
     private int ultimateWarnDuration = 10; // 终极技能警告持续时间，单位为拍
     private int startUltimateWarnBeat;
-    private int ultimateDuration = 5; // 终极技能持续时间，单位为拍
+    private int ultimateDuration = 10; // 终极技能持续时间，单位为拍
     private int startUltimateBeat;
     private int currentBeat;
     int period1health = 20;
     int period2health = 10;
     int period = 1;
+    int laserCount = 0;
+    int maxLaserCount = 1;
     bool invincible = false;
     private Player player;
     private Dictionary<Vector2Int, TileBase>
@@ -41,8 +46,11 @@ public class Boss : Enemy
         tilemap = GridManager.walkableTilemap;
         base.Awake();
         health = 30;
+        enemyCount = 0;
         laserBeat = 1;
         summonBeat = 1;
+        laserCount = 0;
+        maxLaserCount = 1;
         startReverseWarnBeat = 1;
         startUltimateWarnBeat = 5;
         player = FindObjectOfType<Player>();
@@ -66,21 +74,172 @@ public class Boss : Enemy
         }
     }
 
+    private IEnumerator WaitForBeats(int beats)    //等待节拍
+    {
+        int startBeat = BeatManager.BeatIndex;
+        while (BeatManager.BeatIndex - startBeat < beats)
+            yield return null;
+    }
+
+
     private void Laser()
     {
-        int executeBeat = BeatManager.BeatIndex + 1;
-        int choosetype = Random.Range(0, 2);
-        if (choosetype == 0)
+        switch (laserCount)
         {
-            int chooserow = Random.Range(-5, 5);
-            LaserManager.TryScheduleFullRowLaser(chooserow, executeBeat);
+            case (0):
+                StartCoroutine(LaserType0());
+                Debug.Log("释放激光0");
+                break;
+            case (1):
+                StartCoroutine(LaserType1());
+                Debug.Log("释放激光1");
+                break;
+            case (2):
+                StartCoroutine(LaserType2());
+                Debug.Log("释放激光2");
+                break;
+            case (3):
+                StartCoroutine(LaserType3());
+                Debug.Log("释放激光3");
+                break;
+            case (4):
+                StartCoroutine(LaserType4());
+                Debug.Log("释放激光4");
+                break;
         }
-        else if (choosetype == 1)
-        {
-            int choosecolumn = Random.Range(-9, 9);
-            LaserManager.TryScheduleFullColumnLaser(choosecolumn, executeBeat);
-        }
+        laserCount++;
+        if (laserCount > maxLaserCount) laserCount = 0;
+    }
 
+    private IEnumerator LaserType0()          //脉冲激光：选定2行2列，连续放5次激光
+    {
+        try
+        {
+            int[] rand = new int[4];
+            rand[0] = Random.Range(-Ymax, Ymax);
+            for (int i = 1; i < 4; i++)
+            {
+                while (true)
+                {
+                    rand[i] = Random.Range(-Ymax, Ymax);
+                    if (rand[i] != rand[i - 1]) break;
+                }
+
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                LaserManager.TryScheduleFullRowLaser(rand[0], BeatManager.BeatIndex + 1);
+                LaserManager.TryScheduleFullRowLaser(rand[1], BeatManager.BeatIndex + 1);
+                LaserManager.TryScheduleFullColumnLaser(rand[2], BeatManager.BeatIndex + 1);
+                LaserManager.TryScheduleFullColumnLaser(rand[3], BeatManager.BeatIndex + 1);
+                yield return WaitForBeats(1);
+            }
+        }
+        finally
+        {
+            laserBeat = BeatManager.BeatIndex + laserCd;
+        }
+    }
+
+    private IEnumerator LaserType1()    //收缩激光：由内向外，四个方向放激光，延伸至四角四个2*2区域
+    {
+        try
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                LaserManager.TryScheduleFullRowLaser(i, BeatManager.BeatIndex + 1);
+                LaserManager.TryScheduleFullRowLaser(-i-1, BeatManager.BeatIndex + 1);
+                LaserManager.TryScheduleFullColumnLaser(i, BeatManager.BeatIndex + 1);
+                LaserManager.TryScheduleFullColumnLaser(-i-1, BeatManager.BeatIndex + 1);
+                yield return WaitForBeats(1);
+            }
+        }
+        finally
+        {
+            laserBeat = BeatManager.BeatIndex + laserCd;
+        }
+    }
+
+    private IEnumerator LaserType2()             //跟踪激光：跟踪玩家位置交替释放行或列激光，持续10次
+    {
+        try
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                int rand=Random.Range(0, 2);
+                if (rand == 0)
+                    LaserManager.TryScheduleFullRowLaser(player.GridPosition.y, BeatManager.BeatIndex + 1);
+                else
+                    LaserManager.TryScheduleFullColumnLaser(player.GridPosition.x, BeatManager.BeatIndex + 1);
+                yield return WaitForBeats(1);
+
+            }
+        }
+        finally
+        {
+            laserBeat = BeatManager.BeatIndex + laserCd;
+        }
+    }
+
+    private IEnumerator LaserType3()         //遍历激光：从左到右，从上到下，释放十字激光，可卡一拍间隔穿过   
+    {
+        try
+        {
+            for (int i = -Ymax; i < Ymax; i++)
+            {
+                LaserManager.TryScheduleFullRowLaser(i, BeatManager.BeatIndex + 1);
+                LaserManager.TryScheduleFullColumnLaser(i, BeatManager.BeatIndex + 1);
+                yield return WaitForBeats(1);
+            }
+            for (int i = Ymax - 1; i >= -Ymax; i--)
+            {
+                LaserManager.TryScheduleFullRowLaser(i, BeatManager.BeatIndex + 1);
+                LaserManager.TryScheduleFullColumnLaser(i, BeatManager.BeatIndex + 1);
+                yield return WaitForBeats(1);
+            }
+        }
+        finally
+        {
+            laserBeat = BeatManager.BeatIndex + laserCd;
+        }
+    }
+
+    private IEnumerator LaserType4()         //交替激光：奇数行->奇数列->偶数行->偶数列
+    {
+        try
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                for (int i = -Ymax; i < Ymax; i++)
+                {
+                    if (i % 2 != 0)
+                        LaserManager.TryScheduleFullRowLaser(i, BeatManager.BeatIndex + 1);
+                }
+                yield return WaitForBeats(1);
+                for (int i = -Ymax; i < Ymax; i++)
+                {
+                    if (i % 2 != 0)
+                        LaserManager.TryScheduleFullColumnLaser(i, BeatManager.BeatIndex + 1);
+                }
+                yield return WaitForBeats(1);
+                for (int i = -Ymax; i < Ymax; i++)
+                {
+                    if (i % 2 == 0)
+                        LaserManager.TryScheduleFullRowLaser(i, BeatManager.BeatIndex + 1);
+                }
+                yield return WaitForBeats(1);
+                for (int i = -Ymax; i < Ymax; i++)
+                {
+                    if (i % 2 == 0)
+                        LaserManager.TryScheduleFullColumnLaser(i, BeatManager.BeatIndex + 1);
+                }
+                yield return WaitForBeats(1);
+            }
+        }
+        finally
+        {
+            laserBeat = BeatManager.BeatIndex + laserCd;
+        }
     }
 
     private void Summon(string name)
@@ -215,12 +374,14 @@ public class Boss : Enemy
             startReverseWarnBeat = BeatManager.BeatIndex + 2; // 设置第一次反转警告时间
             summonCd--;
             laserCd--;
+            maxLaserCount = 3;
         }
         if (period == 3)
         {
             startUltimateWarnBeat = BeatManager.BeatIndex + 10; // 设置第一次终极技能警告时间
             summonCd--;
             laserCd--;
+            maxLaserCount = 4;
         }
     }
 
@@ -301,17 +462,26 @@ public class Boss : Enemy
     public override void PerformAction()
     {
         currentBeat = BeatManager.BeatIndex;  // 获取当前拍数
+        enemyCount = 0;
         // 每拍行动（AI 决策）
-        if (currentBeat==summonBeat)
+        foreach (Vector2Int checkPos in GridManager.GetValidPositions())
         {
-            Summon("enemy"); // 召唤小怪
-            summonBeat+=summonCd; // 重置召唤冷却
+            if (GridManager.GetOccupant(checkPos) is MeleeEnemy)
+                enemyCount++;
+                
+        }
+        if (enemyCount < maxEnemyNumber)    //敌人数量有上限
+        {
+            if (currentBeat >= summonBeat)
+            {
+                Summon("enemy"); // 召唤小怪
+                summonBeat += summonCd; // 重置召唤冷却
+            }
         }
 
         if (currentBeat==laserBeat)
         {
             Laser();
-            laserBeat+=laserCd;
         }
 
 
