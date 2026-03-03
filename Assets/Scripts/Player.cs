@@ -8,6 +8,7 @@ public class Player : Entity
     [SerializeField] public float actCooldown = 0.1f;
     [SerializeField] private float baseBpm = 120f;
     public bool isReverseDirection = false;
+    public bool isProtected = false;
 
     [SerializeField] private GameObject healthPrefab;
     public int health = 3;
@@ -162,6 +163,12 @@ public class Player : Entity
 
     override public void Onhit(Vector2Int fromDirection)
     {
+        if (isProtected)
+        {
+            // Todo:展示护盾碎裂的动画或特效
+            isProtected = false; // 保护状态只持续一次
+            return;
+        }
         health -= 1;
         DisplayHealth();
         if(health <= 0)

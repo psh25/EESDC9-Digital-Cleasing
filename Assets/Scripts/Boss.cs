@@ -1,20 +1,23 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static UnityEditor.PlayerSettings;
 
 public class Boss : Enemy
 {
     [SerializeField] private GameObject minionPrefab;
     [SerializeField] private GameObject firewallPrefab;
     [SerializeField] private int skillCd=10;
-    [SerializeField] private int laserCd=5;
-    [SerializeField] private int reverseDirectionMinCd;        //反转技能最小冷却
+    [SerializeField] private int laserCd=8;
+    [SerializeField] private int rageCd=4;        //反转技能最小冷却
     [SerializeField]private int maxEnergy;           //能量满时使用终结技能
     [SerializeField] private int Ymax=5;     // 地图的Y轴范围，假设地图中心为(0,0)，则范围为[-Ymax, Ymax-1]
-    [SerializeField] private int maxEnemyNumber=15;     
+    [SerializeField] private int maxEnemyNumber=15;
     List<Vector2Int> safePositions = new List<Vector2Int>();
     List<Vector2Int> dangerPositions = new List<Vector2Int>();
     List<int> remainingLasers = new List<int>();  // 用于存储当前阶段剩余的随机激光模式
@@ -24,11 +27,11 @@ public class Boss : Enemy
     private int enemyCount;    //敌人数量
     private int skillBeat;
     private int laserBeat;
-    private int reverseDirectionCd;   //反转技能冷却计数
+    private int rageCount;   //反转技能冷却计数
     private int energy;
-    private int reverseWarnDuration = 3; // 反转警告持续时间，单位为拍
-    private int reverseDirectionDuration = 3; // 反转持续时间，单位为拍
-    private int startReverseDirectionBeat;
+    private int rageDuration = 10; // 反转持续时间，单位为拍
+    private int rageBeat;
+    private bool isRage;
     private int ultimateWarnDuration = 10; // 终极技能警告持续时间，单位为拍
     private int ultimateDuration = 10; // 终极技能持续时间，单位为拍
     private int startUltimateBeat;
@@ -37,6 +40,7 @@ public class Boss : Enemy
     int period2health = 10;
     int period = 1;
     bool invincible = false;
+    private bool isDead = false;
     private Player player;
     private Dictionary<Vector2Int, TileBase>
     originalTiles = new Dictionary<Vector2Int, TileBase>();
@@ -47,15 +51,23 @@ public class Boss : Enemy
     {
         tilemap = GridManager.walkableTilemap;
         base.Awake();
-        health = 30;
+        health=30;
         skillBeat = BeatManager.BeatIndex + 1;
         laserBeat = BeatManager.BeatIndex + 1;
         energy = 0;
+        isDead = false;
         enemyCount = 0;
         player = FindObjectOfType<Player>();
         mainCamera = Camera.main;
         originalCameraColor = mainCamera.backgroundColor;
+        isRage = false;
 
+    }
+
+    private new void Start()
+    {
+        base.Start();
+        SetBossOccupant(); // 占领格子
     }
     public void SetBossOccupant()
     { // 占领以Boss为中心的3x3格子
@@ -148,7 +160,7 @@ public class Boss : Enemy
             while (true)
             {
                 rand[0] = Random.Range(-Ymax, Ymax);
-                if(rand[0]!=player.GridPosition.y) break;    //确保激光不生成在玩家脸上
+                if ((rand[0] - player.GridPosition.y) * (rand[0] - player.GridPosition.y) > 1) break;    //确保激光不生成在玩家脸上
             }
             for (int i = 1; i < 4; i++)
             {
@@ -157,9 +169,9 @@ public class Boss : Enemy
                     rand[i] = Random.Range(-Ymax, Ymax);
                     if (rand[i] != rand[i - 1])
                     {
-                        if (i == 1 && rand[i] != player.GridPosition.y) break;
-                        if (i == 2 && rand[i] != player.GridPosition.x) break;
-                        if (i == 3 && rand[i] != player.GridPosition.x) break;
+                        if (i == 1 && (rand[i] - player.GridPosition.y) * (rand[i] - player.GridPosition.y) > 1) break;
+                        if (i == 2 && (rand[i] - player.GridPosition.x) * (rand[i] - player.GridPosition.x) > 1) break;
+                        if (i == 3 && (rand[i] - player.GridPosition.x) * (rand[i] - player.GridPosition.x) > 1) break;
                     }
                 }
 
@@ -209,7 +221,7 @@ public class Boss : Enemy
                     LaserManager.TryScheduleFullRowLaser(player.GridPosition.y, BeatManager.BeatIndex + 1);
                 else
                     LaserManager.TryScheduleFullColumnLaser(player.GridPosition.x, BeatManager.BeatIndex + 1);
-                yield return WaitForBeats(1);
+                yield return WaitForBeats(2);
 
             }
         }
@@ -276,15 +288,16 @@ public class Boss : Enemy
 
     private void Summon(string name)
     {
+        if (isDead) return;    // 如果Boss已经死亡，跳过行动
         Vector2Int? spawnPos = FindRandomEmptyPositionOnMap();
         if (spawnPos.HasValue)
         {
             if (name == "enemy")
             {
-                GameObject newMinionObj = Instantiate(minionPrefab);
-                MeleeEnemy newMinion = newMinionObj.GetComponent<MeleeEnemy>();
-                newMinion.autoRegisterOnStart = false;
-                newMinion.SetGridPosition(spawnPos.Value);
+                    GameObject newMinionObj = Instantiate(minionPrefab);
+                    MeleeEnemy newMinion = newMinionObj.GetComponent<MeleeEnemy>();
+                    newMinion.autoRegisterOnStart = false;
+                    newMinion.SetGridPosition(spawnPos.Value);
             }
             else if (name == "firewall")
             {
@@ -310,58 +323,42 @@ public class Boss : Enemy
 
     }
 
-    private void ReverseWarn()
+    private void Rage()
     {
-        Debug.Log("Boss 发出反转警告！");    //Todo:在Boss上显示一个明显的视觉提示，告诉玩家即将反转移动方向
-        mainCamera.backgroundColor = new Color(238, 130, 238); //浅紫罗兰
-    }
-
-    private void ReverseDirection()
-    {
-        if (player != null)
+        mainCamera.backgroundColor = new Color(148, 0, 211); //深紫罗兰
+        foreach (MeleeEnemy enemy in FindObjectsOfType<MeleeEnemy>())
         {
-            player.isReverseDirection = true;
-            mainCamera.backgroundColor = new Color(148, 0, 211); //深紫罗兰
-            Debug.Log("Boss 反转了玩家的移动方向！");
+            rageBeat=BeatManager.BeatIndex;
+            enemy.actionCd = 1;    //所有小怪行动速度加快
+            isRage = true;
         }
     }
 
-    private void EndReverseDirection()
+    private void EndRage()
     {
-        if (player != null)
+        mainCamera.backgroundColor = originalCameraColor; // 恢复原始背景色
+        foreach (MeleeEnemy enemy in FindObjectsOfType<MeleeEnemy>())
         {
-            player.isReverseDirection = false;
-            mainCamera.backgroundColor = originalCameraColor; // 恢复原始背景色
-            Debug.Log("Boss 结束了玩家的移动方向反转！");
+            enemy.actionCd = 3;    //所有小怪行动速度恢复正常
+            isRage = false;
         }
     }
+
 
     private void TryRandomBasicSkill()   // 在反转技能冷却期间，优先召唤小怪；反转技能冷却结束后，随机选择召唤小怪或反转玩家移动方向
     {
-        if (reverseDirectionCd > 0)     //如果反转技能还在冷却中，优先召唤小怪
+        if (rageCount > 0)     //如果反转技能还在冷却中，优先召唤小怪
         {
             Summon("enemy");
-            reverseDirectionCd--;
+            rageCount--;
             skillBeat = currentBeat + skillCd;
         }
 
         else   //如果反转技能冷却结束，随机选择召唤小怪或反转玩家移动方向
         {
-            int rand = Random.Range(0, 2);
-            if (rand == 0)
-            {
-                Summon("enemy");
+                Rage();
                 skillBeat = currentBeat + skillCd;
-            }
-            else
-            {
-                ReverseWarn();
-                startReverseDirectionBeat = currentBeat + reverseWarnDuration; // 设置反转持续时间
-                skillBeat = currentBeat + reverseWarnDuration + reverseDirectionDuration + skillCd;
-                reverseDirectionCd = reverseDirectionMinCd; // 重置反转技能冷却
-            }
-
-
+                rageCount=rageCd; // 重置反转技能冷却
         }
 
 
@@ -441,15 +438,15 @@ public class Boss : Enemy
         }
         if (period == 2)
         {
-            reverseDirectionCd = 0;
-            skillCd-=2;
-            laserCd--;
+            rageCount = rageCd;
+            skillCd-=3;
+            laserCd-=2;
         }
         if (period == 3)
         {
             energy = 0;
-            skillCd-=2;
-            laserCd--;
+            skillCd-=3;
+            laserCd-=2;
         }
     }
 
@@ -469,10 +466,9 @@ public class Boss : Enemy
     private Vector2Int? FindRandomEmptyPositionOnMap()
     {
         List<Vector2Int> emptyPositions = new List<Vector2Int>();
-
         foreach (var pos in GridManager.GetValidPositions())
         {
-            if (GridManager.GetOccupant(pos) == null)
+            if (GridManager.GetOccupant(pos) == null&& Vector2Int.Distance(pos, GridPosition) > 1)
             {
                 emptyPositions.Add(pos);
             }
@@ -529,6 +525,7 @@ public class Boss : Enemy
 
     public override void PerformAction()
     {
+        if(isDead) return;    // 如果Boss已经死亡，跳过行动
         currentBeat = BeatManager.BeatIndex;  // 获取当前拍数
         enemyCount = 0;
         // 每拍行动（AI 决策）
@@ -591,14 +588,9 @@ public class Boss : Enemy
             //Todo:Boss进入第3阶段，增加更强的攻击行为，例如发射更多子弹、增加移动速度等
         }
 
-        if (currentBeat == startReverseDirectionBeat)      //反转技能逻辑
+        if (currentBeat == rageBeat+rageDuration)      //反转技能逻辑
         {
-            ReverseDirection();
-        }
-
-        if (currentBeat == startReverseDirectionBeat + reverseDirectionDuration)
-        {
-            EndReverseDirection();
+            EndRage();
         }
 
         if (currentBeat == startUltimateBeat)      //终极技能逻辑
@@ -634,6 +626,13 @@ public class Boss : Enemy
 
     public override void BossGotHit()
     {
+        if (isRage)
+        {
+            player.isProtected = true;
+            EndRage();
+            //Todo:获得护盾的特效
+        }
+
         if (invincible)
         {
             Debug.Log("Boss 处于无敌状态，未受伤");
@@ -652,18 +651,34 @@ public class Boss : Enemy
 
         if (health <= 0)
         {
-            Debug.Log("Boss 被击败！");
-            Die();         //清除场上所有敌人
-            foreach (var pos in GridManager.GetValidPositions())
+            OnDisable(); // 禁用Boss的行为
+            StopAllCoroutines();
+            for (int x = -1; x <= 1; x++)
             {
-                if (GridManager.GetOccupant(pos) is Enemy enemy)
+                for (int y = -1; y <= 1; y++)
+                {
+                    Vector2Int pos = GridPosition + new Vector2Int(x, y);
+                    GridManager.ClearOccupant(pos);
+                }
+            }
+            isDead = true;
+            Debug.Log("Boss 被击败！");
+            foreach (Vector2Int checkPos in GridManager.GetValidPositions())
+            {
+                Enemy enemy = GridManager.GetOccupant(checkPos) as Enemy;
+
+                if (enemy != null && enemy != this)
                 {
                     enemy.Die();
                 }
             }
-
+            Die();
         }
+
     }
+
+
+
 }
 
 

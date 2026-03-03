@@ -12,7 +12,7 @@ public class Enemy : Entity
             BeatManager.OnBeat += OnBeatTriggered;
         }
 
-        private void OnDisable()
+        protected void OnDisable()
         {
             // 取消订阅，防止内存泄漏或错误调用
             BeatManager.OnBeat -= OnBeatTriggered;

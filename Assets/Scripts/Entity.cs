@@ -23,7 +23,7 @@ public class Entity : MonoBehaviour
         }
     }
 
-    private void Start()
+    protected void Start()
     {
 
         //吸附到最近的可用位置
@@ -33,11 +33,6 @@ public class Entity : MonoBehaviour
         {
             gridPosition = nearestPosition;
             gridManager.SetOccupant(gridPosition, this);
-            if (this is Boss boss)
-            {
-                boss.SetBossOccupant();
-                Debug.Log("Boss registered at position: " + gridPosition);
-            }
 
             SyncWorldPosition();
             return;

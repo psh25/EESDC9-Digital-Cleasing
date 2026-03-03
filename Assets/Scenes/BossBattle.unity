@@ -1566,8 +1566,12 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
+      propertyPath: rageCd
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
       propertyPath: laserCd
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
       propertyPath: skillCd

@@ -5,7 +5,7 @@ using UnityEngine;
 public class MeleeEnemy : Enemy
 {
     private int turnCounter = 0;               // 0:抬手回合, 1:行动回合
-    private int actionCd=3;
+    public int actionCd=3;
     private int actionBeat;
     private Vector2Int? pendingDirection = null;
     private int pendingWarningExecuteBeat = -1;
