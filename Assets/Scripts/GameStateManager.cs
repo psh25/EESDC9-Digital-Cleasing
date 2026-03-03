@@ -45,7 +45,7 @@ public class GameStateManager : MonoBehaviour
         LevelAccess["Game1"] = true;
         LevelAccess["Game2"] = true;
         LevelAccess["Game3"] = true;
-        LevelAccess[BossLevelName] = false;
+        LevelAccess[BossLevelName] = true; // Boss关初始可进入，调试用
     }
 
     // 查询某关卡当前是否可进入（带空值保护）

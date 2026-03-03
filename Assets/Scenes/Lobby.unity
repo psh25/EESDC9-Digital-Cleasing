@@ -355,7 +355,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3280570810693739497, guid: 283c807c028a40741b29cf30d6925f25, type: 3}
       propertyPath: nextSceneName
-      value: GameBoss
+      value: BossBattle
       objectReference: {fileID: 0}
     - target: {fileID: 3280570810693739497, guid: 283c807c028a40741b29cf30d6925f25, type: 3}
       propertyPath: snapToGridEachFrame

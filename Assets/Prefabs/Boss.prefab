@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7333968324822854094}
   - component: {fileID: 1299212108272322416}
   - component: {fileID: 4001081987381656569}
+  - component: {fileID: -8817889605687691606}
   m_Layer: 0
   m_Name: Boss
   m_TagString: Untagged
@@ -47,13 +48,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridManager: {fileID: 0}
   gridPosition: {x: 0, y: 0}
-  snapToGridEachFrame: 0
+  snapToGridEachFrame: 1
   autoRegisterOnStart: 1
   health: 1
   deathEffectPrefab: {fileID: 0}
   deathEffectDuration: 1
   minionPrefab: {fileID: 5183014269672295324, guid: f86ac2457fca0dd43ae885634db0f544, type: 3}
   firewallPrefab: {fileID: 1999088129985610963, guid: 9ba3a4274ed26d041a1823ba36946e63, type: 3}
+  skillCd: 10
+  laserCd: 8
+  rageCd: 4
+  maxEnergy: 0
+  Ymax: 5
+  maxEnemyNumber: 15
+  dangerTile: {fileID: 0}
+  safeTile: {fileID: 0}
 --- !u!212 &4001081987381656569
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -106,3 +115,24 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &-8817889605687691606
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338252580431851217}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f70853cdab1c68547b3b03b6b1736c1a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

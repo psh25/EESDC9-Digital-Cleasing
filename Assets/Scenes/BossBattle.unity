@@ -1558,73 +1558,13 @@ PrefabInstance:
       value: Boss
       objectReference: {fileID: 0}
     - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: Xmax
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: Ymax
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: rageCd
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: laserCd
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: skillCd
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: safeTile
-      value: 
-      objectReference: {fileID: 11400000, guid: 15b9a232924dd3f48980940fb266edec, type: 2}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: summonCd
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: maxEnergy
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: dangerTile
-      value: 
-      objectReference: {fileID: 11400000, guid: 3214028b72c317b4cb6e7c36c49efa8e, type: 2}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: ultimateCd
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
       propertyPath: gridManager
       value: 
       objectReference: {fileID: 1718631845}
     - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: minionPrefab
+      propertyPath: deathEffectPrefab
       value: 
-      objectReference: {fileID: 5183014269672295324, guid: f86ac2457fca0dd43ae885634db0f544, type: 3}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: firewallPrefab
-      value: 
-      objectReference: {fileID: 1999088129985610963, guid: 9ba3a4274ed26d041a1823ba36946e63, type: 3}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: maxEnemyNumber
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: reverseDirectionCd
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: reverseDirectionMinCd
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7333968324822854094, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.075
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 6712123827025910781, guid: 7b8d6ba4ef67d6245b4461e5089ea5b3, type: 3}
     - target: {fileID: 7333968324822854094, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.5
