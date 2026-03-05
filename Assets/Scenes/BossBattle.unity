@@ -1562,6 +1562,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1718631845}
     - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
+      propertyPath: portalPrefab
+      value: 
+      objectReference: {fileID: 25229617161717216, guid: 283c807c028a40741b29cf30d6925f25, type: 3}
+    - target: {fileID: 1299212108272322416, guid: b656077e8fc6bd54fbf4c42f741dbc8a, type: 3}
       propertyPath: deathEffectPrefab
       value: 
       objectReference: {fileID: 6712123827025910781, guid: 7b8d6ba4ef67d6245b4461e5089ea5b3, type: 3}

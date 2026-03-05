@@ -41,10 +41,10 @@ public class StartMenuController : MonoBehaviour
         Debug.Log("开始任务指令已接收。");
         // TODO:加载游戏主场景
              // 2. 检查场景名变量是否为空或未赋值（防止因未设置导致的错误）
-        if (!string.IsNullOrEmpty(mainGameSceneName))
+        if (!string.IsNullOrEmpty("IntroductionScene"))
         {
             // 3. 核心：执行场景切换
-            SceneManager.LoadSceneAsync(mainGameSceneName,LoadSceneMode.Single);
+            SceneManager.LoadSceneAsync("IntroductionScene", LoadSceneMode.Single);
         }
         else
         {

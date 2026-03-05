@@ -12,6 +12,7 @@ public class Boss : Enemy
 {
     [SerializeField] private GameObject minionPrefab;
     [SerializeField] private GameObject firewallPrefab;
+    [SerializeField] private GameObject portalPrefab;
     [SerializeField] private int skillCd=10;
     [SerializeField] private int laserCd=8;
     [SerializeField] private int rageCd=4;        //反转技能最小冷却
@@ -673,6 +674,11 @@ public class Boss : Enemy
                 }
             }
             Die();
+            Vector2Int? spawnPos = new Vector2Int(0, 0);
+            GameObject newMinionObj = Instantiate(portalPrefab);
+            Portal newMinion = newMinionObj.GetComponent<Portal>();
+            newMinion.autoRegisterOnStart = false;
+            newMinion.SetGridPosition(spawnPos.Value);
         }
 
     }
