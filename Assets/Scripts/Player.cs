@@ -14,6 +14,19 @@ public class Player : Entity
     public int health = 3;
     private readonly List<GameObject> activeHealthVisuals = new List<GameObject>();
 
+    [Header("Health UI Settings")]
+    // 视口坐标锚点：左下(0,0) 右上(1,1)，默认贴近左上角。
+    [SerializeField] private Vector2 healthAnchorViewport = new Vector2(0.06f, 0.90f);
+    // 相邻血量图标在视口坐标中的水平间距。
+    [SerializeField] private float healthSpacingViewport = 0.04f;
+    // 图标最终放置的世界坐标 Z 平面。
+    [SerializeField] private float healthPlaneZ = 0f;
+    // 正交相机参考尺寸，用于保持图标相对屏幕大小稳定。
+    [SerializeField] private float healthReferenceOrthoSize = 5f;
+
+    private Camera healthDisplayCamera;
+    private Vector3 healthBaseScale = Vector3.one;
+
     [SerializeField] private GameObject deathEffectPrefab;
     [SerializeField] private float deathEffectDuration = 0.2f;
 
@@ -39,6 +52,13 @@ public class Player : Entity
         {
             animator = GetComponent<Animator>();
         }
+
+        healthDisplayCamera = Camera.main;
+        if (healthPrefab != null)
+        {
+            healthBaseScale = healthPrefab.transform.localScale;
+        }
+
         DisplayHealth();
     }
 
@@ -130,6 +150,12 @@ public class Player : Entity
 
     }
 
+    private void LateUpdate()
+    {
+        // 放在 LateUpdate，确保本帧相机移动/缩放后再更新 UI 位置。
+        UpdateHealthVisualLayout();
+    }
+
     // 获取输入方向（WASD 与方向键）
     private bool TryGetInputDirection(out Vector2Int direction)
     {
@@ -182,17 +208,77 @@ public class Player : Entity
 
     public void DisplayHealth()
     {
-        // 在屏幕上方显示血量
         if (healthPrefab == null) return;
+
         for (int i = activeHealthVisuals.Count - 1; i >= 0; i--)
         {
             Destroy(activeHealthVisuals[i]);
         }
+
         activeHealthVisuals.Clear();
+
         for (int i = 0; i < health; i++)
         {
-            GameObject healthVisual = Instantiate(healthPrefab, new Vector3(-8 + i * 0.8f, 4.5f, 0), Quaternion.identity);
+            // 先生成，再统一按相机视口进行布局。
+            GameObject healthVisual = Instantiate(healthPrefab, Vector3.zero, Quaternion.identity);
             activeHealthVisuals.Add(healthVisual);
+        }
+
+        UpdateHealthVisualLayout();
+    }
+
+    private Camera GetHealthDisplayCamera()
+    {
+        if (healthDisplayCamera == null)
+        {
+            healthDisplayCamera = Camera.main;
+        }
+
+        return healthDisplayCamera;
+    }
+
+    private void UpdateHealthVisualLayout()
+    {
+        if (activeHealthVisuals.Count == 0)
+        {
+            return;
+        }
+
+        Camera displayCamera = GetHealthDisplayCamera();
+        if (displayCamera == null)
+        {
+            return;
+        }
+
+        // 将显示平面与相机的距离转换为 ViewportToWorldPoint 所需的 z 参数。
+        float zDistance = healthPlaneZ - displayCamera.transform.position.z;
+        if (zDistance <= 0f)
+        {
+            zDistance = Mathf.Abs(zDistance) + 0.01f;
+        }
+
+        Vector3 scaledHealthSize = healthBaseScale;
+        if (displayCamera.orthographic && healthReferenceOrthoSize > 0.01f)
+        {
+            // 正交相机尺寸改变时，按比例补偿图标缩放，保持屏幕观感大小基本不变。
+            scaledHealthSize *= displayCamera.orthographicSize / healthReferenceOrthoSize;
+        }
+
+        for (int i = 0; i < activeHealthVisuals.Count; i++)
+        {
+            GameObject healthVisual = activeHealthVisuals[i];
+            if (healthVisual == null)
+            {
+                continue;
+            }
+
+            float viewportX = healthAnchorViewport.x + i * healthSpacingViewport;
+            // 将“相对屏幕位置”转换到世界坐标，实现始终贴在左上区域。
+            Vector3 worldPosition = displayCamera.ViewportToWorldPoint(new Vector3(viewportX, healthAnchorViewport.y, zDistance));
+            worldPosition.z = healthPlaneZ;
+
+            healthVisual.transform.position = worldPosition;
+            healthVisual.transform.localScale = scaledHealthSize;
         }
     }
 
