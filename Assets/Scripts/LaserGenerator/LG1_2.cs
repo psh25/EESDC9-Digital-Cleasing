@@ -2,16 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LaserGenerator1 : MonoBehaviour
+public class LG1_2 : MonoBehaviour
 {
     private LaserManager laserManager;
+    private int count1;
+    private int cooldown;
 
     private void Awake()
     {
+        // 获取LaserManager组件
         if (laserManager == null)
         {
             laserManager = FindObjectOfType<LaserManager>();
         }
+        count1 = 0;
+        cooldown = 8;
     }
 
     private void OnEnable()
@@ -28,25 +33,17 @@ public class LaserGenerator1 : MonoBehaviour
 
     private void OnBeatTriggered()
     {
-        
-        if (BeatManager.BeatIndex % 4 == 0)
+        if (cooldown > 0)
         {
-            int rowY = 1;
-            int executeBeat = BeatManager.BeatIndex + 1;
-            LaserManager.TryScheduleFullRowLaser(rowY, executeBeat);
+            cooldown--;
+            return;
         }
-        
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
+        if (BeatManager.BeatIndex % 2 == 0) return;
+        count1++;
+        int executeBeat = BeatManager.BeatIndex + 1;
+        LaserManager.TryScheduleFullColumnLaser(6 - count1 % 15, executeBeat);
+        LaserManager.TryScheduleFullColumnLaser(6 - (count1 + 5) % 15, executeBeat);
+        LaserManager.TryScheduleFullColumnLaser(6 - (count1 + 10) % 15, executeBeat);
         
     }
 }
