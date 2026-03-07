@@ -7,7 +7,7 @@ public class MeleeEnemy : Enemy
     private int turnCounter = 0;               // 0:抬手回合, 1:行动回合
     public int actionCd=3;
     private int actionBeat;
-    private Vector2Int? pendingDirection = null;
+    protected Vector2Int? pendingDirection = null;
     private int pendingWarningExecuteBeat = -1;
 
     private Animator animator;
@@ -58,6 +58,7 @@ public class MeleeEnemy : Enemy
 
                 if (!GridManager.IsValidPosition(targetPos))
                 {
+                    OnInvalidTargetDuringAction(targetPos, pendingDirection.Value);
                     pendingDirection = null;
                     turnCounter = 0;
                     return;
@@ -74,7 +75,7 @@ public class MeleeEnemy : Enemy
                 }
                 else
                 {
-                    // 前方有障碍，可能什么都不做
+                    OnBlockedByNonPlayerDuringAction(occupant, pendingDirection.Value);
                 }
 
                 pendingDirection = null;
@@ -83,6 +84,16 @@ public class MeleeEnemy : Enemy
             turnCounter = 0;
             actionBeat = BeatManager.BeatIndex + actionCd; // 设置下一次行动的拍数
         }
+    }
+
+    // 行动阶段目标格无效时的默认行为：不做额外处理
+    protected virtual void OnInvalidTargetDuringAction(Vector2Int targetPos, Vector2Int direction)
+    {
+    }
+
+    // 行动阶段被非玩家障碍阻挡时的默认行为：不做额外处理
+    protected virtual void OnBlockedByNonPlayerDuringAction(Entity occupant, Vector2Int direction)
+    {
     }
 
     protected override void OnMovedByTryMove(Vector2Int oldPos, Vector2Int newPos)
@@ -139,7 +150,7 @@ public class MeleeEnemy : Enemy
         base.Die();
     }
 
-    private void ChooseDirection()  //选择方向
+    protected virtual void ChooseDirection()  //选择方向
     {
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         System.Collections.Generic.List<Vector2Int> validDirs = new System.Collections.Generic.List<Vector2Int>();  //存储有效方向
