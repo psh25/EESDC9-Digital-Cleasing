@@ -29,7 +29,8 @@ public class Boss : Enemy
     List<int> remainingLasers = new List<int>();  // 用于存储当前阶段剩余的随机激光模式
     private Tilemap tilemap;  // 用于标记危险区域和安全区域的Tilemap
     public TileBase dangerTile;  // 用于标记危险区域的Tile
-    public TileBase safeTile;    // 用于标记安全区域的Tile
+    public TileBase warningTile;    // 用于标记安全区域的Tile
+    public AnimatedTile ultimateAnimatedTile;        //释放终结技能时的动画Tile
     private int skillBeat;
     private int laserBeat;
     private int rageCount;   //反转技能冷却计数
@@ -411,7 +412,15 @@ public class Boss : Enemy
             }
         }
         safePositions = new List<Vector2Int>(tempSet); // 将HashSet转换为List
-        SetTiles(safePositions, safeTile); // 将安全区域标记为 SafeTile
+        foreach (Vector2Int checkPos in GridManager.GetValidPositions())       // 将非安全区域标记为危险区域
+        {
+            if (!safePositions.Contains(checkPos))
+            {
+                dangerPositions.Add(checkPos);
+            }
+        }
+
+        SetTiles(dangerPositions, warningTile); // 将危险区域标记为 WarningTile，提示玩家躲避
     }
 
     private void Ultimate()
@@ -419,15 +428,8 @@ public class Boss : Enemy
         RestoreOriginalTiles(); // 恢复之前的瓦片，清除安全区域标记
         Debug.Log("Boss 使用了终极技能！");    //Todo:Boss执行终极技能，例如发射大量子弹、造成范围伤害等
         mainCamera.backgroundColor = new Color(255, 0, 0); //红色
-        foreach (Vector2Int checkPos in GridManager.GetValidPositions())       // 将非安全区域标记为危险区域
-        {
-            if(!safePositions.Contains(checkPos))
-            {
-                dangerPositions.Add(checkPos);
-            }
-        }
         safePositions.Clear(); // 清空安全区域列表，准备下一次使用
-        SetTiles(dangerPositions, dangerTile); // 将危险区域标记为 DangerTile
+        SetAnimatedTiles(dangerPositions, ultimateAnimatedTile); // 将危险区域标记为 DangerTile
         foreach(Vector2Int pos in dangerPositions)       // 对危险区域内的玩家造成伤害
         {
             if (GridManager.GetOccupant(pos) is Player player)
@@ -536,6 +538,17 @@ public class Boss : Enemy
             TileBase current = tilemap.GetTile(cellPos);
             originalTiles[pos] = current;           // 保存原始瓦片
             tilemap.SetTile(cellPos, Tile);     // 改为安全瓦片
+        }
+    }
+
+    private void SetAnimatedTiles(List<Vector2Int> positions,AnimatedTile tile)
+    {
+        originalTiles.Clear();
+        foreach (Vector2Int pos in positions)
+        {
+            Vector3Int cellPos = new Vector3Int(pos.x, pos.y, 0);
+            originalTiles[pos] = tilemap.GetTile(cellPos); // 保存原始瓦片
+            tilemap.SetTile(cellPos, ultimateAnimatedTile); // 设置为终极技能动画瓦片
         }
     }
 
@@ -694,6 +707,7 @@ public class Boss : Enemy
                     enemy.Die();
                 }
             }
+            RestoreOriginalTiles(); // 恢复之前的瓦片
             Die();
             Vector2Int? spawnPos = new Vector2Int(0, 0);
             GameObject newMinionObj = Instantiate(portalPrefab);
