@@ -6,26 +6,30 @@ using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 using static UnityEditor.PlayerSettings;
 
 public class Boss : Enemy
 {
+    public Image healthBarFill;
+    public Color normalColor = Color.red;
+    public Color invincibleColor = Color.yellow;  //无敌状态下的血条颜色
+    private int maxHealth;
+    private float healthPercentage;
     [SerializeField] private GameObject minionPrefab;
     [SerializeField] private GameObject firewallPrefab;
     [SerializeField] private GameObject portalPrefab;
-    [SerializeField] private int skillCd=10;
-    [SerializeField] private int laserCd=8;
-    [SerializeField] private int rageCd=4;        //反转技能最小冷却
-    [SerializeField]private int maxEnergy;           //能量满时使用终结技能
-    [SerializeField] private int Ymax=5;     // 地图的Y轴范围，假设地图中心为(0,0)，则范围为[-Ymax, Ymax-1]
-    [SerializeField] private int maxEnemyNumber=15;
+    private int skillCd=10;
+    private int laserCd=8;
+    private int rageCd=4;        //反转技能最小冷却
+    private int maxEnergy=5;           //能量满时使用终结技能
+    private int Ymax=5;     // 地图的Y轴范围，假设地图中心为(0,0)，则范围为[-Ymax, Ymax-1]
     List<Vector2Int> safePositions = new List<Vector2Int>();
     List<Vector2Int> dangerPositions = new List<Vector2Int>();
     List<int> remainingLasers = new List<int>();  // 用于存储当前阶段剩余的随机激光模式
     private Tilemap tilemap;  // 用于标记危险区域和安全区域的Tilemap
     public TileBase dangerTile;  // 用于标记危险区域的Tile
     public TileBase safeTile;    // 用于标记安全区域的Tile
-    private int enemyCount;    //敌人数量
     private int skillBeat;
     private int laserBeat;
     private int rageCount;   //反转技能冷却计数
@@ -53,11 +57,11 @@ public class Boss : Enemy
         tilemap = GridManager.walkableTilemap;
         base.Awake();
         health=30;
+        maxHealth=health;
         skillBeat = BeatManager.BeatIndex + 1;
         laserBeat = BeatManager.BeatIndex + 1;
         energy = 0;
         isDead = false;
-        enemyCount = 0;
         player = FindObjectOfType<Player>();
         mainCamera = Camera.main;
         originalCameraColor = mainCamera.backgroundColor;
@@ -69,6 +73,12 @@ public class Boss : Enemy
     {
         base.Start();
         SetBossOccupant(); // 占领格子
+        if(healthBarFill!=null)
+        {
+            healthBarFill.fillAmount = 1f; // 初始化血条为满
+            healthBarFill.color = normalColor; // 设置初始颜色
+            Debug.Log("Boss 血条已初始化为满");
+        }
     }
     public void SetBossOccupant()
     { // 占领以Boss为中心的3x3格子
@@ -86,6 +96,20 @@ public class Boss : Enemy
             GridManager.SetOccupant(GridPosition + offset, this);
             Debug.Log($"Boss 占领格子: {GridPosition + offset}");
         }
+    }
+
+    private void UpdateHealthBar()         // 更新血条显示
+    {
+        if (healthBarFill != null)
+        {
+            healthPercentage = (float)health / maxHealth;
+            healthBarFill.fillAmount = Mathf.Clamp01(healthPercentage);   // 确保填充量在0到1之间
+        }
+    }
+
+    private void UpdateInvincibleVisual()   // 更新无敌状态的视觉效果，例如改变血条颜色
+    {
+        healthBarFill.color = invincible ? invincibleColor : normalColor;
     }
 
     private IEnumerator WaitForBeats(int beats)    //等待节拍
@@ -431,8 +455,10 @@ public class Boss : Enemy
                 GridManager.GetOccupant(checkPos).Die(); // 清除场上所有 MeleeEnemy
             }
         }
+
         period++;
         invincible = true; // 进入新阶段后暂时无敌
+        UpdateInvincibleVisual(); // 更新无敌状态的视觉效果
         for (int i = 0; i < 3; i++)
         {
             Summon("firewall"); // 召唤 Firewall
@@ -461,6 +487,7 @@ public class Boss : Enemy
             }
         }
         invincible = false;  // 如果没有 Firewall 了，解除无敌状态
+        UpdateInvincibleVisual(); // 更新无敌状态的视觉效果
 
     }
 
@@ -528,14 +555,7 @@ public class Boss : Enemy
     {
         if(isDead) return;    // 如果Boss已经死亡，跳过行动
         currentBeat = BeatManager.BeatIndex;  // 获取当前拍数
-        enemyCount = 0;
         // 每拍行动（AI 决策）
-        foreach (Vector2Int checkPos in GridManager.GetValidPositions())
-        {
-            if (GridManager.GetOccupant(checkPos) is MeleeEnemy)
-                enemyCount++;
-                
-        }
 
         if (currentBeat==laserBeat)
         {
@@ -641,6 +661,7 @@ public class Boss : Enemy
         }
 
         health--;
+        UpdateHealthBar();  // 更新血条显示
         Debug.Log($"Boss 受到攻击，当前生命值: {health}");
 
         if (health == period1health || health == period2health)

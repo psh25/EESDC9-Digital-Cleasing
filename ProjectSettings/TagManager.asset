@@ -56,3 +56,12 @@ TagManager:
   - name: UI
     uniqueID: 1674280559
     locked: 0
+  - name: New Layer 6
+    uniqueID: 3706301287
+    locked: 0
+  - name: New Layer 7
+    uniqueID: 327622947
+    locked: 0
+  - name: HealthBar
+    uniqueID: 3418504795
+    locked: 0
