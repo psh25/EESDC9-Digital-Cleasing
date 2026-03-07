@@ -102,7 +102,7 @@ MonoBehaviour:
   gridPosition: {x: 0, y: 0}
   snapToGridEachFrame: 1
   autoRegisterOnStart: 1
-  actCooldown: 0.1
+  actCooldown: 0.12
   baseBpm: 120
   isReverseDirection: 0
   isProtected: 0

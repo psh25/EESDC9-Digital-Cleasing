@@ -46,5 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bpm: 122
   firstBeatOffsetSeconds: 0
-  autoStartWithoutMusic: 0
+  autoStartWithoutMusic: 1
   gametime: 0

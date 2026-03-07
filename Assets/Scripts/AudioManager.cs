@@ -16,7 +16,7 @@ public class AudioManager : MonoBehaviour
     // 定时播放延迟（秒）：预留调度时间，保证 PlayScheduled 稳定
     [SerializeField] private float scheduleDelaySeconds = 0.1f;
     // 播放战斗 BGM 的支线名
-    [SerializeField] private List<string> battleLevelNames = new List<string> { "Game1", "Game2", "Game3", "BossBattle" };
+    [SerializeField] private List<string> battleLevelNames = new List<string> { "Tutorial","Game1", "Game2", "Game3", "BossBattle" };
 
     // 单例初始化并准备 AudioSource
     private void Awake()

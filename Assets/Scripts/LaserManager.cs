@@ -10,6 +10,7 @@ public class LaserManager : MonoBehaviour
     [SerializeField] private GameObject laserOriginPrefab;    // 激光起点 Prefab（默认向左）
     [SerializeField] private int defaultMaxExtension = 12;    // 默认延伸格数
     [SerializeField] private float laserDisplayDuration = 0.25f;  // 激光显示持续时间
+    [SerializeField] private float laserDamageDelay = 0.08f;   // 激光出现后延迟结算伤害
 
     public static LaserManager Instance { get; private set; }
 
@@ -187,12 +188,16 @@ public class LaserManager : MonoBehaviour
         {
             ClearLaserVisuals();
 
+            List<List<Vector2Int>> executePaths = new List<List<Vector2Int>>();
+
             foreach (ScheduledLaser laser in executingLasers)
             {
                 List<Vector2Int> executePath = GetExecutePath(laser);
-                ResolveLaserDamage(executePath);
+                executePaths.Add(executePath);
                 SpawnLaserVisuals(executePath, laser.direction);
             }
+
+            StartCoroutine(ResolveLaserDamageAfterDelay(executePaths));
 
             if (activeLaserVisuals.Count > 0)
             {
@@ -278,6 +283,20 @@ public class LaserManager : MonoBehaviour
             {
                 player.Onhit(Vector2Int.zero);  // 激光不推挤，传零向量
             }
+        }
+    }
+
+    // 先显示激光，再延迟结算伤害
+    private IEnumerator ResolveLaserDamageAfterDelay(List<List<Vector2Int>> executePaths)
+    {
+        if (laserDamageDelay > 0f)
+        {
+            yield return new WaitForSeconds(laserDamageDelay);
+        }
+
+        foreach (List<Vector2Int> path in executePaths)
+        {
+            ResolveLaserDamage(path);
         }
     }
 

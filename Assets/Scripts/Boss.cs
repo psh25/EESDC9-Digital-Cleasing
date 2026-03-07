@@ -30,7 +30,7 @@ public class Boss : Enemy
     List<int> remainingLasers = new List<int>();  // 用于存储当前阶段剩余的随机激光模式
     private Tilemap tilemap;  // 用于标记危险区域和安全区域的Tilemap
     public TileBase dangerTile;  // 用于标记危险区域的Tile
-    public TileBase warningTile;    // 用于标记安全区域的Tile
+    public TileBase warningTile;    // 用于警示危险区域的Tile
     public AnimatedTile ultimateAnimatedTile;        //释放终结技能时的动画Tile
     private int skillBeat;
     private int laserBeat;
@@ -43,10 +43,10 @@ public class Boss : Enemy
     private int ultimateDuration = 10; // 终极技能持续时间，单位为拍
     private int startUltimateBeat;
     private int currentBeat;
-    int period1health = 20;
-    int period2health = 10;
-    int period = 1;
-    bool invincible = false;
+    public int period1health = 20;
+    public int period2health = 10;
+    public int period = 1;
+    public bool invincible = false;
     private bool isDead = false;
     private Player player;
     private Dictionary<Vector2Int, TileBase>

@@ -187,6 +187,11 @@ public class Player : Entity
             return true;
         }
 
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Die();
+        }
+
         return false;
     }
 
@@ -200,7 +205,7 @@ public class Player : Entity
         }
         health -= 1;
         DisplayHealth();
-        if(health <= 0)
+        if(health == 0)
         {
             Die();
         }
@@ -252,7 +257,7 @@ public class Player : Entity
 
         // 将显示平面与相机的距离转换为 ViewportToWorldPoint 所需的 z 参数。
         float zDistance = healthPlaneZ - displayCamera.transform.position.z;
-        if (zDistance <= 0f)
+        if (zDistance >= 0f)
         {
             zDistance = Mathf.Abs(zDistance) + 0.01f;
         }
@@ -297,6 +302,13 @@ public class Player : Entity
                 Destroy(effect, deathEffectDuration);
             }
         }
-        SceneManager.LoadSceneAsync("Lobby",LoadSceneMode.Single);
+        if ((SceneManager.GetActiveScene().name).Split('.')[0] != "Tutorial")
+        {
+            SceneManager.LoadSceneAsync("Lobby", LoadSceneMode.Single);
+        }
+        else
+        {
+            SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
+        }
     }
 }

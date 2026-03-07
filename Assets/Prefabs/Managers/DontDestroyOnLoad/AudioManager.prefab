@@ -47,10 +47,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bgmSource: {fileID: 0}
   battleBgmClip: {fileID: 8300000, guid: de094208c7bdbae41931ed20d235e4de, type: 3}
-  battleBpm: 122
-  firstBeatOffsetSeconds: 0
   scheduleDelaySeconds: 0.1
   battleLevelNames:
+  - Tutorial
   - Game1
   - Game2
   - Game3
@@ -69,7 +68,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0

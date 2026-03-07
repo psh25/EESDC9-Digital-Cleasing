@@ -44,6 +44,7 @@ public class GameStateManager : MonoBehaviour
     void InitializeLevelAccess()
     {
         LevelAccess.Clear();
+        LevelAccess["Tutorial"] = true; // 教程关初始可进入]
         LevelAccess["Game1"] = true;
         LevelAccess["Game2"] = true;
         LevelAccess["Game3"] = true;
@@ -55,7 +56,7 @@ public class GameStateManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(levelName))
         {
-            return false;
+            return true;
         }
 
         return LevelAccess.TryGetValue(levelName, out bool accessible) && accessible;

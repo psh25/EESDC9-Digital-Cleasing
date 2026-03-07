@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
+  m_Name: BossAnimatedTIle
+  m_EditorClassIdentifier: 
+  m_AnimatedSprites:
+  - {fileID: 2064557087, guid: 413f10273f98649438068808a716fcba, type: 3}
+  - {fileID: 1703496221, guid: 413f10273f98649438068808a716fcba, type: 3}
+  - {fileID: -2140023932, guid: 413f10273f98649438068808a716fcba, type: 3}
+  - {fileID: 1222952467, guid: 413f10273f98649438068808a716fcba, type: 3}
+  - {fileID: 967255557, guid: 413f10273f98649438068808a716fcba, type: 3}
+  - {fileID: 694569454, guid: 413f10273f98649438068808a716fcba, type: 3}
+  - {fileID: 110067755, guid: 413f10273f98649438068808a716fcba, type: 3}
+  - {fileID: 742804322, guid: 413f10273f98649438068808a716fcba, type: 3}
+  - {fileID: 987737183, guid: 413f10273f98649438068808a716fcba, type: 3}
+  - {fileID: -2023214240, guid: 413f10273f98649438068808a716fcba, type: 3}
+  m_MinSpeed: 5
+  m_MaxSpeed: 5
+  m_AnimationStartTime: 0
+  m_AnimationStartFrame: 0
+  m_TileColliderType: 0
+  m_TileAnimationFlags: 0

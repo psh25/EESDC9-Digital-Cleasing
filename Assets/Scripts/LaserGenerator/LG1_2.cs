@@ -16,7 +16,7 @@ public class LG1_2 : MonoBehaviour
             laserManager = FindObjectOfType<LaserManager>();
         }
         count1 = 0;
-        cooldown = 8;
+        cooldown = 5;
     }
 
     private void OnEnable()
