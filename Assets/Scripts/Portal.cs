@@ -12,6 +12,7 @@ public class Portal : Entity
     // 门的动画组件
     private Animator animator;
     // 全局关卡状态管理器引用
+    private MessageManager messageManager;
     public GameStateManager gameStateManager;
 
     // 门当前是否可用
@@ -26,6 +27,7 @@ public class Portal : Entity
     public override void Awake()
     {
         base.Awake();
+        messageManager = FindObjectOfType<MessageManager>();
         if (animator == null)
         {
             animator = GetComponent<Animator>();
@@ -87,13 +89,17 @@ public class Portal : Entity
     // 被攻击触发传送：激活时切场景；从子关返回 Lobby 时更新关卡完成状态
     public override void Onhit(Vector2Int attackDirection)
     {
+        if (nextSceneName == "BossBattle" && gameStateManager != null && gameStateManager.LevelAccess["BossBattle"] == false)
+        {
+            messageManager.ShowMessage("这个传送门后封印着强大的Boss，完成所有关卡以解除封印！");
+        }
         if (active == true)
         {
             if (gameStateManager != null && nextSceneName == "Lobby")
             {
                 gameStateManager.MarkLevelCompleted(currentLevel);
             }
-            SceneManager.LoadSceneAsync(nextSceneName,LoadSceneMode.Single);
+            SceneManager.LoadSceneAsync(nextSceneName, LoadSceneMode.Single);
         }
         else
         {

@@ -7,6 +7,7 @@ public class GameStateManager : MonoBehaviour
 {
     // 全局单例
     public static GameStateManager Instance;
+    private MessageManager messageManager;
     // 关卡访问状态：true=可进入，false=不可进入/已完成后关闭入口
     [SerializeField]public Dictionary<string, bool> LevelAccess = new Dictionary<string, bool>();
 
@@ -32,7 +33,8 @@ public class GameStateManager : MonoBehaviour
     // 首次进入游戏时初始化关卡状态
     void Start()
     {
-        if(LevelAccess.Count == 0) //首次启动游戏时初始化关卡访问权限
+        messageManager = FindObjectOfType<MessageManager>();
+        if (LevelAccess.Count == 0) //首次启动游戏时初始化关卡访问权限
         {
             InitializeLevelAccess();
         }
@@ -45,7 +47,7 @@ public class GameStateManager : MonoBehaviour
         LevelAccess["Game1"] = true;
         LevelAccess["Game2"] = true;
         LevelAccess["Game3"] = true;
-        LevelAccess[BossLevelName] = true; // Boss关初始可进入，调试用
+        LevelAccess[BossLevelName] = false; // Boss关初始可进入，调试用
     }
 
     // 查询某关卡当前是否可进入（带空值保护）
@@ -92,6 +94,10 @@ public class GameStateManager : MonoBehaviour
         if (allMainLevelsCompleted)
         {
             LevelAccess[BossLevelName] = true;
+            if (messageManager != null)
+            {
+                messageManager.ShowMessage("Boss关已解锁！");
+            }
         }
     }
 }

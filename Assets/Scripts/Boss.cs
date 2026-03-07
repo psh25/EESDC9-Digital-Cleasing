@@ -11,6 +11,7 @@ using static UnityEditor.PlayerSettings;
 
 public class Boss : Enemy
 {
+    private MessageManager messageManager; // 用于显示消息
     public Image healthBarFill;
     public Color normalColor = Color.red;
     public Color invincibleColor = Color.yellow;  //无敌状态下的血条颜色
@@ -73,6 +74,7 @@ public class Boss : Enemy
     private new void Start()
     {
         base.Start();
+        messageManager = FindObjectOfType<MessageManager>();
         SetBossOccupant(); // 占领格子
         if(healthBarFill!=null)
         {
@@ -352,6 +354,11 @@ public class Boss : Enemy
     private void Rage()
     {
         mainCamera.backgroundColor = new Color(148, 0, 211); //深紫罗兰
+        if (messageManager != null)
+        {
+            messageManager.ShowMessage("Boss处于狂暴状态期间，让敌人撞击一次Boss可提前结束狂暴状态并使你获得免伤护盾！", 4f);
+        }
+
         foreach (MeleeEnemy enemy in FindObjectsOfType<MeleeEnemy>())
         {
             rageBeat=BeatManager.BeatIndex;
@@ -394,6 +401,11 @@ public class Boss : Enemy
     {
         HashSet<Vector2Int> tempSet = new HashSet<Vector2Int>(); // 用于临时存储安全区域，避免重复
         Debug.Log("Boss 发出终极技能警告！");    //Todo:在Boss上显示一个明显的视觉提示，告诉玩家即将使用终极技能
+        if (messageManager != null)
+        {
+            messageManager.ShowMessage("Boss即将释放终结技能，尽快移动到未被污染的地砖避免被秒杀！", 4f);
+        }
+
         mainCamera.backgroundColor = new Color(255, 69, 0); //橙红色
         startUltimateBeat= currentBeat + ultimateWarnDuration; // 设置终极技能开始的拍数
         for (int i = 0; i < 2; i++)
@@ -485,6 +497,10 @@ public class Boss : Enemy
         {
             if (GridManager.GetOccupant(checkPos) is Firewall)
             {
+                if (messageManager != null)
+                {
+                    messageManager.ShowMessage("击破所有防火墙以解除Boss的无敌状态！", 2f);
+                }
                 return;
             }
         }

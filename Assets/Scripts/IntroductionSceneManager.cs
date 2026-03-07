@@ -14,6 +14,6 @@ public class IntroductionSceneManager : MonoBehaviour
     }
     void onContinueButtonClicked()
     {
-        SceneManager.LoadSceneAsync("Lobby", LoadSceneMode.Single);
+        SceneManager.LoadSceneAsync("Teach1", LoadSceneMode.Single);
     }
 }

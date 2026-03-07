@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/PauseScene.unity
     guid: 0ec81b7cc9dbdc4449aeda79cb7133a5
   - enabled: 1
-    path: Assets/Scenes/Teach.unity
+    path: Assets/Scenes/Teach1.unity
     guid: 76f1f7e68c09cae45a533df8031f65e9
   - enabled: 1
     path: Assets/Scenes/Lobby.unity
@@ -44,4 +44,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Game2.3.unity
     guid: 787a2019e2817904cb83bfa436fc8463
+  - enabled: 1
+    path: Assets/Scenes/Teach2.unity
+    guid: 9c7bbf2ada228de46a96b8a8a4fb33ca
+  - enabled: 1
+    path: Assets/Scenes/Teach3.unity
+    guid: 5f8ca9a64d5af2645b77191e551d3459
   m_configObjects: {}
